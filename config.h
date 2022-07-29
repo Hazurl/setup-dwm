@@ -74,7 +74,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
 static const char *termcmd[]  = { "termite", NULL };
-static const char *layoutmenu_cmd = "layoutmenu.sh";
+static const char *layoutmenu_cmd = "cat <<EOF | xmenu\n[]= Tiled Layout	0\n><> Floating Layout	1\n[M] Monocle Layout	2\nEOF";
 static const char *volup[] = {"pavolume", "volup", NULL};
 static const char *voldown[] = {"pavolume", "voldown", NULL};
 static const char *volmutetoggle[] = {"pavolume", "mutetoggle", NULL};
