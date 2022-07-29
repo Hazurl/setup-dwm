@@ -206,7 +206,8 @@ static void grabkeys(void);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
-static void layoutmenu(const Arg *arg);
+static void layoutxmenu(const Arg *arg);
+static void layoutdmenu();
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -1204,7 +1205,7 @@ killclient(const Arg *arg)
 }
 
 void
-layoutmenu(const Arg *arg) {
+layoutxmenu(const Arg *arg) {
 	FILE *p;
 	char c[3], *s;
 	int i;
@@ -1219,6 +1220,32 @@ layoutmenu(const Arg *arg) {
 
 	i = atoi(c);
 	setlayout(&((Arg) { .v = &layouts[i] }));
+}
+
+void
+layoutdmenu(const Arg *arg)
+{
+	FILE *p;
+	char c[3], *s;
+	int i;
+
+	dmenumon[0] = '0' + selmon->num;
+	char *command = arraytostr(dmenulayoutcmd);
+	logtofile("dmenulayout: %s", command);
+	if (!(p = popen(command, "r")))
+	{
+		logtofile("dmenulayout: popen failed %s", strerror(errno));
+		return;
+	}
+	s = fgets(c, sizeof(c), p);
+	pclose(p);
+	free(command);
+
+	if (!s || *s == '\0' || *s == '\n')
+		return;
+
+	i = atoi(c);
+	setlayout(&((Arg){.v = &layouts[i]}));
 }
 
 void
@@ -2086,6 +2113,7 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
+	logtofile("spawn: %s", ((char **)arg->v)[0]);
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
 	if (fork() == 0) {
@@ -2093,6 +2121,7 @@ spawn(const Arg *arg)
 			close(ConnectionNumber(dpy));
 		setsid();
 		execvp(((char **)arg->v)[0], (char **)arg->v);
+		logtofile("spawn: execvp failed %s", strerror(errno));
 		fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[0]);
 		perror(" failed");
 		exit(EXIT_SUCCESS);
@@ -2778,6 +2807,7 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
+	logtofile("===============================\nStarting DWM");
 	run();
 	cleanup();
 	XCloseDisplay(dpy);

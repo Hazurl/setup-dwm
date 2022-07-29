@@ -14,7 +14,9 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const int force_bar_height   = 24;
 static const Bool viewontag         = True;     /* Switch view on tag switch */
 static const char *fonts[] = {"Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
-static const char dmenufont[] = "Fira Mono:style=Regular:size=10";
+#define QUOTED_(x) #x
+#define QUOTED(x) QUOTED_(x)
+#define dmenufont "Fira Mono:style=Regular:size=10"
 
 static const char col_themed_Background[] = "#282a36";
 static const char col_themed_CurrentLine[] = "#44475a";
@@ -73,6 +75,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
+static const char *dmenulayoutcmd[] = { "echo", "\"[]= Tiled~0\n><> Floating~1\n[M] Monocle~2\"", "|", "dmenu", "-d", "'~'", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", QUOTED(dmenufont), NULL };
 static const char *termcmd[]  = { "termite", NULL };
 static const char *layoutmenu_cmd = "cat <<EOF | xmenu\n[]= Tiled Layout	0\n><> Floating Layout	1\n[M] Monocle Layout	2\nEOF";
 static const char *volup[] = {"pavolume", "volup", NULL};
@@ -99,6 +102,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+	{ MODKEY,                       XK_o,      layoutdmenu,    {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_agrave, view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_agrave, tag,            {.ui = ~0 } },
@@ -131,7 +135,7 @@ static Key keys[] = {
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
+	{ ClkLtSymbol,          0,              Button3,        layoutxmenu,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
