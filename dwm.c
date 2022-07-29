@@ -1565,17 +1565,18 @@ resizemouse(const Arg *arg)
 	restack(selmon);
 	ocx = c->x;
 	ocy = c->y;
-	ocx = c->x + c->w;
-	ocy = c->y + c->h;
+	ocx2 = c->x + c->w;
+	ocy2 = c->y + c->h;
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
 		return;
 
+	if (!XQueryPointer (dpy, c->win, &dummy, &dummy, &di, &di, &nx, &ny, &dui))
+		return;
+	horizcorner = nx < c->w / 2;
+	vertcorner  = ny < c->h / 2;
+
 	if (c->isfloating || NULL == c->mon->lt[c->mon->sellt]->arrange) {
-		if (!XQueryPointer (dpy, c->win, &dummy, &dummy, &di, &di, &nx, &ny, &dui))
-			return;
-		horizcorner = nx < c->w / 2;
-		vertcorner  = ny < c->h / 2;
 		XWarpPointer (dpy, None, c->win, 0, 0, 0, 0,
 			horizcorner ? (-c->bw) : (c->w + c->bw -1),
 			vertcorner  ? (-c->bw) : (c->h + c->bw -1)
