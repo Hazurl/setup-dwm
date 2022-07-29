@@ -231,7 +231,6 @@ static void scratchpad_remove ();
 static void scratchpad_show ();
 static void scratchpad_show_client (Client * c);
 static void scratchpad_show_first (void);
-static int sendevent(Client *c, Atom proto);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -1211,7 +1210,7 @@ layoutmenu(const Arg *arg) {
 	s = fgets(c, sizeof(c), p);
 	pclose(p);
 
-	if (!s || *s == '\0' || c == '\0')
+	if (!s || *s == '\0' || *s == '\n')
 		 return;
 
 	i = atoi(c);
@@ -1553,7 +1552,7 @@ resizemouse(const Arg *arg)
 	XEvent ev;
 	int horizcorner, vertcorner;
 	int di;
-	unsigned int dui:
+	unsigned int dui;
 	Window dummy;
 	Time lasttime = 0;
 
@@ -1603,7 +1602,7 @@ resizemouse(const Arg *arg)
 			nx = horizcorner ? ev.xmotion.x : c->x;
 			ny = vertcorner ? ev.xmotion.y : c->y;
 			nw = MAX(horizcorner ? (ocx2 - nx) : (ev.xmotion.x - ocx - 2 * c->bw + 1), 1);
-			nh = MAX(vertcorner ? (ocy2 - ny) : (ev.xmotion.y - ocy - 2 * c->bw + 1), 1é);
+			nh = MAX(vertcorner ? (ocy2 - ny) : (ev.xmotion.y - ocy - 2 * c->bw + 1), 1);
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
 				resize(c, nx, ny, nw, nh, 1);
