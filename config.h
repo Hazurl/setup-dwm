@@ -10,19 +10,26 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;        /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int user_bh            = 2;        /* 2 is the default spacing around the bar's font */
+static const int user_bh            = 40;        /* 2 is the default spacing around the bar's font */
 static const Bool viewontag         = True;     /* Switch view on tag switch */
-static const char *fonts[]          = { "monospace:size=10" };
-static const char dmenufont[]       = "monospace:size=10";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char *fonts[] = {"Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
+static const char dmenufont[] = "Fira Mono:style=Regular:size=10";
+
+static const char col_themed_Background[] = "#282a36";
+static const char col_themed_CurrentLine[] = "#44475a";
+static const char col_themed_Foreground[] = "#f8f8f2";
+static const char col_themed_Comment[] = "#6272a4";
+static const char col_themed_Cyan[] = "#8be9fd";
+static const char col_themed_Green[] = "#50fa7b";
+static const char col_themed_Orange[] = "#ffb86c";
+static const char col_themed_Pink[] = "#ff79c6";
+static const char col_themed_Purple[] = "#bd93f9";
+static const char col_themed_Red[] = "#ff5555";
+static const char col_themed_Yellow[] = "#f1fa8c";
 static const char *colors[][4]      = {
 	/*               fg         bg         border     float */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2, col_gray2 },
-	[SchemeSel] =  { col_gray4, col_cyan,  col_gray2, col_cyan },
+	[SchemeNorm] = { col_themed_Foreground, col_themed_Background, col_themed_Comment, col_themed_Pink },
+	[SchemeSel] =  { col_themed_Foreground, col_themed_Comment, col_themed_Comment, col_themed_Pink },
 };
 
 /* tagging */
@@ -52,7 +59,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -64,9 +71,14 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
+static const char *termcmd[]  = { "termite", NULL };
 static const char *layoutmenu_cmd = "layoutmenu.sh";
+static const char *volup[] = {"pavolume", "volup", NULL};
+static const char *voldown[] = {"pavolume", "voldown", NULL};
+static const char *volmutetoggle[] = {"pavolume", "mutetoggle", NULL};
+static const char *lightup[] = {"light", "-A", "10", NULL};
+static const char *lightdown[] = {"light", "-U", "10", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -93,6 +105,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_semicolon, focusmon,    {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_semicolon, tagmon,      {.i = +1 } },
+	{0, 														XF86XK_AudioRaiseVolume, spawn, {.v = volup}},
+	{0, 														XF86XK_AudioLowerVolume, spawn, {.v = voldown}},
+	{0, 														XF86XK_AudioMute, spawn, 				{.v = volmutetoggle}},
+	{0, 														XF86XK_MonBrightnessUp, spawn, 	{.v = lightup}},
+	{0, 														XF86XK_MonBrightnessDown, spawn,{.v = lightdown}},
 	TAGKEYS(                        XK_ampersand,              0)
 	TAGKEYS(                        XK_eacute,                 1)
 	TAGKEYS(                        XK_quotedbl,               2)
