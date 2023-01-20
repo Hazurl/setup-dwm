@@ -905,7 +905,7 @@ drawbar(Monitor *m)
 		}
 		const char *tag_name = get_tag_name(i, buffer, sizeof(buffer));
 		w = TEXTW(tag_name) + tags_spacing;
-		int xsep = x+w;
+		int xsep = x+w - tags_spacing / 2;
 		if (is_selected && !next_is_selected) {
 			drw_setscheme(drw, scheme[SchemeSel]);
 			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
