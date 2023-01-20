@@ -1872,6 +1872,13 @@ static void scratchpad_hide ()
 		{
 			scratchpad_last_showed->tags = SCRATCHPAD_MASK;
 		}
+		if (scratchpad_last_showed == selmon->sel)
+		{
+			scratchpad_last_showed = NULL;
+			focus(NULL);
+			arrange(selmon);
+			return;
+		}
 		scratchpad_last_showed = selmon->sel;
 		scratchpad_last_showed -> isfloating = 1;
 		unsigned int w = (float)selmon->ww * 2 / 3;
