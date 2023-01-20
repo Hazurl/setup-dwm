@@ -34,7 +34,7 @@ static const char col_themed_Yellow[] = "#f1fa8c";
 static const char *colors[][4]      = {
 	/*               fg         bg         border     float */
 	[SchemeNorm] = { col_themed_Foreground, col_themed_Background, col_themed_Comment, col_themed_Pink },
-	[SchemeSel] =  { col_themed_Foreground, col_themed_Comment, col_themed_Comment, col_themed_Pink },
+	[SchemeSel] =  { col_themed_Foreground, col_themed_Comment, col_themed_Purple, col_themed_Purple },
 };
 
 /* tagging */
