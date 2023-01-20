@@ -1914,6 +1914,11 @@ static void scratchpad_show ()
 	{
 		if (scratchpad_last_showed -> tags != SCRATCHPAD_MASK)
 		{
+			if (!(ISVISIBLE(scratchpad_last_showed)))
+			{
+				scratchpad_show_client(scratchpad_last_showed);
+				return;
+			}
 			scratchpad_last_showed -> tags = SCRATCHPAD_MASK;
 		}
 		_Bool found_current = 0;
