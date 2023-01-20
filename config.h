@@ -15,6 +15,8 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const int force_bar_height   = 24;
 static const Bool viewontag         = True;     /* Switch view on tag switch */
 static const int max_tag_name_width = 400;
+static const int trianglewidth			= force_bar_height / 4;
+static const int tags_spacing 		  = 4;
 static const char *fonts[] = {"Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
 #define QUOTED_(x) #x
 #define QUOTED(x) QUOTED_(x)
