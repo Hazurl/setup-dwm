@@ -1761,8 +1761,15 @@ static void scratchpad_hide ()
 {
 	if (selmon -> sel)
 	{
-		selmon -> sel -> tags = SCRATCHPAD_MASK;
-		selmon -> sel -> isfloating = 1;
+		if (scratchpad_last_showed && scratchpad_last_showed->tags != SCRATCHPAD_MASK)
+		{
+			scratchpad_last_showed->tags = SCRATCHPAD_MASK;
+		}
+		scratchpad_last_showed = selmon->sel;
+		scratchpad_last_showed -> isfloating = 1;
+		unsigned int w = (float)selmon->ww * 2 / 3;
+		unsigned int h = (float)selmon->wh * 2 / 3;
+		resizeclient(scratchpad_last_showed, selmon->wx + (selmon->ww - w) / 2, selmon->wy + (selmon->wh - h) / 2, w, h);
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -1784,8 +1791,12 @@ static _Bool scratchpad_last_showed_is_killed (void)
 
 static void scratchpad_remove ()
 {
-	if (selmon -> sel && scratchpad_last_showed != NULL && selmon -> sel == scratchpad_last_showed)
+	if (selmon -> sel && scratchpad_last_showed != NULL && selmon -> sel == scratchpad_last_showed) 
+	{
+		selmon -> sel -> isfloating = 0;
+		arrange(selmon);
 		scratchpad_last_showed = NULL;
+	}
 }
 
 static void scratchpad_show ()
@@ -1797,34 +1808,33 @@ static void scratchpad_show ()
 		if (scratchpad_last_showed -> tags != SCRATCHPAD_MASK)
 		{
 			scratchpad_last_showed -> tags = SCRATCHPAD_MASK;
-			focus(NULL);
-			arrange(selmon);
 		}
-		else
+		_Bool found_current = 0;
+		_Bool found_next = 0;
+		for (Client * c = selmon -> clients; c != NULL; c = c -> next)
 		{
-			_Bool found_current = 0;
-			_Bool found_next = 0;
-			for (Client * c = selmon -> clients; c != NULL; c = c -> next)
+			if (found_current == 0)
 			{
-				if (found_current == 0)
+				if (c == scratchpad_last_showed)
 				{
-					if (c == scratchpad_last_showed)
-					{
-						found_current = 1;
-						continue;
-					}
-				}
-				else
-				{
-					if (c -> tags == SCRATCHPAD_MASK)
-					{
-						found_next = 1;
-						scratchpad_show_client (c);
-						break;
-					}
+					found_current = 1;
+					continue;
 				}
 			}
-			if (found_next == 0) scratchpad_show_first ();
+			else
+			{
+				if (c -> tags == SCRATCHPAD_MASK)
+				{
+					found_next = 1;
+					scratchpad_show_client (c);
+					break;
+				}
+			}
+		}
+		if (found_next == 0) {
+			focus(NULL);
+			arrange(selmon);
+			scratchpad_last_showed = NULL;
 		}
 	}
 }
