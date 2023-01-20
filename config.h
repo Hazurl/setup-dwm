@@ -14,6 +14,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int force_bar_height   = 24;
 static const Bool viewontag         = True;     /* Switch view on tag switch */
+static const int max_tag_name_width = 400;
 static const char *fonts[] = {"Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
 #define QUOTED_(x) #x
 #define QUOTED(x) QUOTED_(x)
@@ -38,6 +39,15 @@ static const char *colors[][4]      = {
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const AlternateTagName alternate_tag_names[] = {
+	{ "discord", "ﭮ" },
+	{ "spotify", "" },
+	{ "google-chrome", "" },
+	{ "code", "" },
+	{ "termite", "" },
+	{ "microsoft teams - preview", "" },
+	{ "slack", "" }
+};
 
 static const Rule rules[] = {
 	/* xprop(1):

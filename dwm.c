@@ -166,6 +166,11 @@ struct Systray {
 	Client *icons;
 };
 
+typedef struct AlternateTagName {
+	const char* name;
+	const char* tag;
+} AlternateTagName;
+
 /* function declarations */
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
@@ -200,6 +205,8 @@ static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static unsigned int getsystraywidth();
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
+static const char *get_client_name_for_tag(Client *c, char *buffer, size_t buffer_size);
+static const char *get_tag_name(unsigned int i, char *buffer, unsigned int buffer_size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
@@ -475,6 +482,7 @@ buttonpress(XEvent *e)
 	Client *c;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
+	char buffer[256];
 
 	click = ClkRootWin;
 	/* focus monitor if necessary */
@@ -492,7 +500,7 @@ buttonpress(XEvent *e)
 			/* Do not reserve space for vacant tags */
 			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 				continue;
-			x += TEXTW(tags[i]);
+			x += TEXTW(get_tag_name(i, buffer, sizeof(buffer)));
 		} while (ev->x >= x && ++i < LENGTH(tags));
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
@@ -835,6 +843,7 @@ drawbar(Monitor *m)
 	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
+	char buffer[256];
 
 	if (!m->showbar)
 		return;
@@ -860,9 +869,10 @@ drawbar(Monitor *m)
 		/* Do not draw vacant tags */
 		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 			continue;
-		w = TEXTW(tags[i]);
+		const char *tag_name = get_tag_name(i, buffer, sizeof(buffer));
+		w = TEXTW(tag_name);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, tag_name, urg & 1 << i);
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
@@ -1122,6 +1132,78 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
 	text[size - 1] = '\0';
 	XFree(name.value);
 	return 1;
+}
+
+const char *
+get_client_name_for_tag(Client *c, char *buffer, size_t buffer_size)
+{
+	const char* final_name = buffer;
+	XClassHint ch = {NULL, NULL};
+	XGetClassHint(dpy, c->win, &ch);
+	unsigned int i;
+
+	if (ch.res_name) {
+		memcpy(buffer, ch.res_name, buffer_size);
+		XFree(ch.res_name);
+	} else if (ch.res_class) {
+		memcpy(buffer, ch.res_class, buffer_size);
+		XFree(ch.res_class);
+		return buffer;
+	} else {
+		final_name = c->name;
+	}
+
+	for (i = 0; i < LENGTH(alternate_tag_names); i++) {
+		const AlternateTagName *alt = &alternate_tag_names[i];
+		if (strcmp(alt->name, final_name) == 0) {
+			final_name = alt->tag;
+			break;
+		}
+	}
+
+	return final_name;
+}
+
+const char *
+get_tag_name(unsigned int i, char *buffer, unsigned int buffer_size)
+{
+	Monitor *m;
+	Client *c;
+
+	char *buffer_ptr = buffer;
+	int tag_name_width = 0;
+	int is_first = 1;
+
+	char client_name_buffer[256];
+
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c; c = c->next) {
+			if (c->tags & (1 << i)) {
+				const char *client_name = get_client_name_for_tag(c, client_name_buffer, sizeof(client_name_buffer));
+				int width = TEXTW(client_name);
+				int size = sizeof(client_name) + (is_first ? 0 : sizeof(" ")) + sizeof("...") + 1;
+
+				if (width + tag_name_width > max_tag_name_width || buffer_ptr + size - buffer > buffer_size) {
+					// Add ellipsis to the end of the tag name
+					strcpy(buffer_ptr, "...");
+					return buffer;
+				} else {
+					tag_name_width += width;
+					if (is_first) {
+						is_first = 0;
+						buffer_ptr += sprintf(buffer_ptr, "%s", client_name);
+					} else {
+						tag_name_width += TEXTW(" ");
+						buffer_ptr += sprintf(buffer_ptr, " %s", client_name);
+					}
+				}
+			}
+		}
+	}
+
+	*buffer_ptr = '\0';
+
+	return is_first ? tags[i] : buffer;
 }
 
 void
