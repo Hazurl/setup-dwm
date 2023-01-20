@@ -248,6 +248,22 @@ drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int
 		XDrawRectangle(drw->dpy, drw->drawable, drw->gc, x, y, w - 1, h - 1);
 }
 
+void
+drw_triangle(Drw *drw, XPoint a, XPoint b, XPoint c, int filled, int invert)
+{
+	XPoint points[3];
+	points[0] = a;
+	points[1] = b;
+	points[2] = c;
+	if (!drw || !drw->scheme)
+		return ;
+	XSetForeground(drw->dpy, drw->gc, invert ? drw->scheme[ColBg].pixel : drw->scheme[ColFg].pixel);
+	if (filled)
+		XFillPolygon(drw->dpy, drw->drawable, drw->gc, points, 3, Convex, CoordModeOrigin);
+	else
+		XDrawLines(drw->dpy, drw->drawable, drw->gc, points, 3, CoordModeOrigin);
+}
+
 int
 drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned int lpad, const char *text, int invert)
 {
