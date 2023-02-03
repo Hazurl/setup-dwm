@@ -16,7 +16,6 @@ static const int force_bar_height   = 24;
 static const Bool viewontag         = True;     /* Switch view on tag switch */
 static const int max_tag_name_width = 400;
 static const int trianglewidth			= force_bar_height / 4;
-static const int tags_spacing 		  = 4;
 static const char *fonts[] = {"Hack:style=Regular:size=10", "Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
 #define QUOTED_(x) #x
 #define QUOTED(x) QUOTED_(x)
@@ -37,6 +36,7 @@ static const char *colors[][4]      = {
 	/*               fg         bg         border     float */
 	[SchemeNorm] = { col_themed_Foreground, col_themed_Background, col_themed_Comment, col_themed_Pink },
 	[SchemeSel] =  { col_themed_Foreground, col_themed_Comment, col_themed_Purple, col_themed_Purple },
+	[SchemeUrg] =  { col_themed_Foreground, col_themed_Red, col_themed_Red, col_themed_Red },
 };
 
 /* tagging */

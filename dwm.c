@@ -74,7 +74,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -500,7 +500,7 @@ buttonpress(XEvent *e)
 			/* Do not reserve space for vacant tags */
 			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 				continue;
-			x += TEXTW(get_tag_name(i, buffer, sizeof(buffer))) + tags_spacing;
+			x += TEXTW(get_tag_name(i, buffer, sizeof(buffer)));
 		} while (ev->x >= x && ++i < LENGTH(tags));
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
@@ -870,11 +870,34 @@ drawbar(Monitor *m)
 		/* Do not draw vacant tags */
 		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 			continue;
+		int isSelected = m->tagset[m->seltags] & 1 << i;
+		int isUrgent = urg & 1 << i;
+		Clr* currentScheme = scheme[isUrgent ? SchemeUrg : isSelected ? SchemeSel : SchemeNorm];
 		const char *tag_name = get_tag_name(i, buffer, sizeof(buffer));
-		w = TEXTW(tag_name) + tags_spacing;
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, (lrpad + tags_spacing) / 2, tag_name, urg & 1 << i, 1);
+
+		Clr* nextScheme = scheme[SchemeNorm];
+		for(int j = i + 1; j < LENGTH(tags); j++) {
+			if(!(occ & 1 << j || m->tagset[m->seltags] & 1 << j))
+				continue;
+			int nextIsSelected = m->tagset[m->seltags] & 1 << j;
+			int nextIsUrgent = urg & 1 << j;
+			nextScheme = scheme[nextIsUrgent ? SchemeUrg : nextIsSelected ? SchemeSel : SchemeNorm];
+			break;
+		}
+
+		// Draw tag
+		w = TEXTW(tag_name);
+		drw_setscheme(drw, currentScheme);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, tag_name, 0, 1);
 		x += w;
+
+		// Draw separator
+		int xsep = x + trianglewidth;
+		drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
+		drw_setscheme(drw, nextScheme);
+		drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+
+		x += trianglewidth * 2;
 	}
 	w = blw = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
@@ -892,36 +915,6 @@ drawbar(Monitor *m)
 			drw_setscheme(drw, scheme[SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, 1);
 		}
-	}
-	x = 0;
-	for (i = 0; i < LENGTH(tags); i++) {
-		/* Do not draw vacant tags */
-		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
-			continue;
-		int is_selected = m->tagset[m->seltags] & 1 << i;
-		int next_is_selected = 0;
-		for(int j = i + 1; j < LENGTH(tags); j++) {
-			if(!(occ & 1 << j || m->tagset[m->seltags] & 1 << j))
-				continue;
-			next_is_selected = m->tagset[m->seltags] & 1 << j;
-			break;
-		}
-		const char *tag_name = get_tag_name(i, buffer, sizeof(buffer));
-		w = TEXTW(tag_name) + tags_spacing;
-		int xsep = x+w - tags_spacing / 2;
-		if (is_selected && !next_is_selected) {
-			drw_setscheme(drw, scheme[SchemeSel]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
-			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
-		}
-		if (!is_selected && next_is_selected) {
-			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
-			drw_setscheme(drw, scheme[SchemeSel]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
-		}
-		x += w;
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
 }
