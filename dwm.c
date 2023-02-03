@@ -908,15 +908,15 @@ drawbar(Monitor *m)
 		int xsep = x+w - tags_spacing / 2;
 		if (is_selected && !next_is_selected) {
 			drw_setscheme(drw, scheme[SchemeSel]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+			drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
 		}
 		if (!is_selected && next_is_selected) {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
 			drw_setscheme(drw, scheme[SchemeSel]);
-			drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+			drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
 		}
 		x += w;
 	}
