@@ -846,6 +846,9 @@ drawbar(Monitor *m)
 	if (!m->showbar)
 		return;
 
+	// Clear bar
+	drw_rect(drw, 0, 0, m->ww, bh, 1, 1);
+
 	if(showsystray && m == systraytomon(m) && !systrayonleft)
 		stw = getsystraywidth();
 
@@ -853,7 +856,7 @@ drawbar(Monitor *m)
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
-		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0, 1);
 	}
 
 	resizebarwin(m);
@@ -870,12 +873,12 @@ drawbar(Monitor *m)
 		const char *tag_name = get_tag_name(i, buffer, sizeof(buffer));
 		w = TEXTW(tag_name) + tags_spacing;
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, (lrpad + tags_spacing) / 2, tag_name, urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, (lrpad + tags_spacing) / 2, tag_name, urg & 1 << i, 1);
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
-	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0, 1);
 
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
@@ -884,7 +887,7 @@ drawbar(Monitor *m)
 			/* make sure name will not overlap on tags even when it is very long */
 			mid = mid >= lrpad / 2 ? mid : lrpad / 2;
 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0);
+			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0, 0);
 		} else {
 			drw_setscheme(drw, scheme[SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, 1);
