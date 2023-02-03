@@ -903,6 +903,14 @@ drawbar(Monitor *m)
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0, 1);
 
+	// Draw separator
+	int xsep = x + trianglewidth;
+	drw_triangle(drw, (XPoint){xsep-trianglewidth, bh}, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, 1, 1);
+	drw_setscheme(drw, scheme[(m == selmon && m->sel) ? SchemeSel : SchemeNorm]);
+	drw_triangle(drw, (XPoint){xsep-trianglewidth, 0}, (XPoint){xsep+trianglewidth, bh}, (XPoint){xsep+trianglewidth, 0}, 1, 1);
+
+	x += trianglewidth * 2;
+
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
 			/* fix overflow when window name is bigger than window width */
