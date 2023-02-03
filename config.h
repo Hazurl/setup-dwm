@@ -17,10 +17,10 @@ static const Bool viewontag         = True;     /* Switch view on tag switch */
 static const int max_tag_name_width = 400;
 static const int trianglewidth			= force_bar_height / 4;
 static const int tags_spacing 		  = 4;
-static const char *fonts[] = {"Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
+static const char *fonts[] = {"Hack:style=Regular:size=10", "Fira Mono:style=Regular:size=10", "Symbols Nerd Font:size=12"};
 #define QUOTED_(x) #x
 #define QUOTED(x) QUOTED_(x)
-#define dmenufont "Fira Mono:style=Regular:size=10"
+#define dmenufont "Hack:style=Regular:size=10"
 
 static const char col_themed_Background[] = "#282a36";
 static const char col_themed_CurrentLine[] = "#44475a";
