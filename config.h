@@ -98,6 +98,9 @@ static const char *voldown[] = {"pavolume", "voldown", NULL};
 static const char *volmutetoggle[] = {"pavolume", "mutetoggle", NULL};
 static const char *lightup[] = {"light", "-A", "10", NULL};
 static const char *lightdown[] = {"light", "-U", "10", NULL};
+static const char *playpausecmd[] = {"playerctl", "-p", "spotify,chromium", "play-pause", NULL};
+static const char *nextcmd[] = {"playerctl", "-p", "spotify,chromium", "next", NULL};
+static const char *prevcmd[] = {"playerctl", "-p", "spotify,chromium", "previous", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -128,6 +131,9 @@ static Key keys[] = {
 	{0, 														XF86XK_AudioMute, spawn, 				{.v = volmutetoggle}},
 	{0, 														XF86XK_MonBrightnessUp, spawn, 	{.v = lightup}},
 	{0, 														XF86XK_MonBrightnessDown, spawn,{.v = lightdown}},
+	{0, 														XF86XK_AudioPlay, spawn, 				{.v = playpausecmd}},
+	{0, 														XF86XK_AudioNext, spawn, 				{.v = nextcmd}},
+	{0, 														XF86XK_AudioPrev, spawn, 				{.v = prevcmd}},
 	TAGKEYS(                        XK_ampersand,              0)
 	TAGKEYS(                        XK_eacute,                 1)
 	TAGKEYS(                        XK_quotedbl,               2)
