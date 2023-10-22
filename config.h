@@ -134,15 +134,15 @@ static Key keys[] = {
 	{0, 														XF86XK_AudioPlay, spawn, 				{.v = playpausecmd}},
 	{0, 														XF86XK_AudioNext, spawn, 				{.v = nextcmd}},
 	{0, 														XF86XK_AudioPrev, spawn, 				{.v = prevcmd}},
-	TAGKEYS(                        XK_ampersand,              0)
-	TAGKEYS(                        XK_eacute,                 1)
-	TAGKEYS(                        XK_quotedbl,               2)
-	TAGKEYS(                        XK_apostrophe,             3)
-	TAGKEYS(                        XK_parenleft,              4)
-	TAGKEYS(                        XK_minus,                  5)
-	TAGKEYS(                        XK_egrave,                 6)
-	TAGKEYS(                        XK_underscore,             7)
-	TAGKEYS(                        XK_ccedilla,               8)
+	TAGKEYS(                        XK_1,		               0)
+	TAGKEYS(                        XK_2,		               1)
+	TAGKEYS(                        XK_3,		               2)
+	TAGKEYS(                        XK_4,		               3)
+	TAGKEYS(                        XK_5,		               4)
+	TAGKEYS(                        XK_6,		               5)
+	TAGKEYS(                        XK_7,		               6)
+	TAGKEYS(                        XK_8,		               7)
+	TAGKEYS(                        XK_9,		               8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY,                       XK_s, scratchpad_show, {0} },
 	{ MODKEY|ShiftMask,             XK_s, scratchpad_hide, {0} },
