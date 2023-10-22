@@ -2299,11 +2299,11 @@ tile(Monitor *m)
 		if (i < m->nmaster) {
 			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 			w = n > m->nmaster ? mw - c->bw : mw - 2 * c->bw;
-			resize(c, m->wx, m->wy + my, w, h - 2 * c->bw, False);
+			resize(c, m->wx + (m->ww - mw), m->wy + my, w, h - 2 * c->bw, False);
 			my += HEIGHT(c) - c->bw;
 		} else {
 			h = (m->wh - c->bw - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - 2 * c->bw, h - c->bw, False);
+			resize(c, m->wx, m->wy + ty, m->ww - mw - 2 * c->bw, h - c->bw, False);
 			ty += HEIGHT(c) - c->bw;
 		}
 }
