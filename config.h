@@ -101,6 +101,7 @@ static const char *lightdown[] = {"light", "-U", "10", NULL};
 static const char *playpausecmd[] = {"playerctl", "-p", "spotify,chromium", "play-pause", NULL};
 static const char *nextcmd[] = {"playerctl", "-p", "spotify,chromium", "next", NULL};
 static const char *prevcmd[] = {"playerctl", "-p", "spotify,chromium", "previous", NULL};
+static const char *screenshotcmd[] = { "scrot", "-s", "-e", "xclip -selection clipboard -t image/png -i $f; mv $f ~/tmp; notify-send $f", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -134,6 +135,7 @@ static Key keys[] = {
 	{0, 														XF86XK_AudioPlay, spawn, 				{.v = playpausecmd}},
 	{0, 														XF86XK_AudioNext, spawn, 				{.v = nextcmd}},
 	{0, 														XF86XK_AudioPrev, spawn, 				{.v = prevcmd}},
+	{0, 														XK_Print, spawn, {.v = screenshotcmd}},
 	TAGKEYS(                        XK_1,		               0)
 	TAGKEYS(                        XK_2,		               1)
 	TAGKEYS(                        XK_3,		               2)
