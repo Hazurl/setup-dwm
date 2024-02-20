@@ -167,8 +167,10 @@ struct Systray {
 };
 
 typedef struct AlternateTagName {
-	const char* name;
-	const char* tag;
+	const char* class;
+	const char* instance;
+	const char* title;
+	const char* rename;
 } AlternateTagName;
 
 /* function declarations */
@@ -1174,31 +1176,42 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
 const char *
 get_client_name_for_tag(Client *c, char *buffer, size_t buffer_size)
 {
-	const char* final_name = buffer;
+	int hide_client_name = 0;
+	const char* alternate_name = NULL;
+
 	XClassHint ch = {NULL, NULL};
-	XGetClassHint(dpy, c->win, &ch);
-	unsigned int i;
-
-	if (ch.res_name) {
-		memcpy(buffer, ch.res_name, buffer_size);
-		XFree(ch.res_name);
-	} else if (ch.res_class) {
-		memcpy(buffer, ch.res_class, buffer_size);
-		XFree(ch.res_class);
-		return buffer;
-	} else {
-		final_name = c->name;
+	if (XGetClassHint(dpy, c->win, &ch) == 0) {
+		return broken;
 	}
+	
+	const char* class    = ch.res_class ? ch.res_class : broken;
+	const char* instance = ch.res_name  ? ch.res_name  : broken;
 
-	for (i = 0; i < LENGTH(alternate_tag_names); i++) {
+	for (unsigned int i = 0; i < LENGTH(alternate_tag_names); i++) {
 		const AlternateTagName *alt = &alternate_tag_names[i];
-		if (strcmp(alt->name, final_name) == 0) {
-			final_name = alt->tag;
+		if ((!alt->title || strstr(c->name, alt->title))
+		&& (!alt->class || strstr(class, alt->class))
+		&& (!alt->instance || strstr(instance, alt->instance)))
+		{
+			alternate_name = alt->rename;
+			if (alternate_name == NULL) {
+				hide_client_name = 1;
+			}
 			break;
 		}
 	}
 
-	return final_name;
+
+	if (ch.res_class)
+		XFree(ch.res_class);
+	if (ch.res_name)
+		XFree(ch.res_name);
+
+	if (hide_client_name) {
+		return NULL;
+	}
+
+	return alternate_name ? alternate_name : c->name;
 }
 
 const char *
@@ -1207,40 +1220,43 @@ get_tag_name(unsigned int i, char *buffer, unsigned int buffer_size)
 	Monitor *m;
 	Client *c;
 
-	char *buffer_ptr = buffer;
 	int tag_name_width = 0;
 	int is_first = 1;
 
 	char client_name_buffer[256];
 
+	buffer[0] = '\0';
+	buffer_size -=  sizeof("…") + 1;
+
 	for (m = mons; m; m = m->next) {
 		for (c = m->clients; c; c = c->next) {
 			if (c->tags & (1 << i)) {
 				const char *client_name = get_client_name_for_tag(c, client_name_buffer, sizeof(client_name_buffer));
-				int width = TEXTW(client_name);
-				int size = sizeof(client_name) + (is_first ? 0 : sizeof(" ")) + sizeof("...") + 1;
-
-				if (width + tag_name_width > max_tag_name_width || buffer_ptr + size - buffer > buffer_size) {
-					// Add ellipsis to the end of the tag name
-					strcpy(buffer_ptr, "...");
-					return buffer;
-				} else {
-					tag_name_width += width;
-					if (is_first) {
-						is_first = 0;
-						buffer_ptr += sprintf(buffer_ptr, "%s", client_name);
-					} else {
-						tag_name_width += TEXTW(" ");
-						buffer_ptr += sprintf(buffer_ptr, " %s", client_name);
-					}
+				if (client_name == NULL) {
+					continue;
 				}
+
+				if (tag_name_width > max_tag_name_width || buffer_size <= 0) {
+					// Add ellipsis to the end of the tag name
+					strcat(buffer, "…");
+					return buffer;
+				}
+
+				int width = TEXTW(client_name);
+				tag_name_width += width;
+
+				if (is_first == 0) {
+					strncat(buffer, " ", buffer_size);
+					buffer_size -= 1;
+				}
+				is_first = 0;
+				strncat(buffer, client_name, buffer_size);
+				buffer_size -= strlen(client_name);
 			}
 		}
 	}
 
-	*buffer_ptr = '\0';
-
-	return is_first ? tags[i] : buffer;
+	return buffer;
 }
 
 void

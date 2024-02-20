@@ -42,13 +42,15 @@ static const char *colors[][4]      = {
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 static const AlternateTagName alternate_tag_names[] = {
-	{ "discord", "ﭮ" },
-	{ "spotify", "" },
-	{ "google-chrome", "" },
-	{ "code", "" },
-	{ "kitty", "" },
-	{ "microsoft teams - preview", "" },
-	{ "slack", "" }
+	{ NULL, "discord", NULL, "ﭮ" },
+	{ NULL, "spotify", NULL, "" },
+	{ NULL, "google-chrome", NULL, "" },
+	{ NULL, "code", NULL, "" },
+	{ NULL, "kitty", NULL, "" },
+	{ NULL, "microsoft teams - preview", NULL, "" },
+	{ NULL, "slack", NULL, "" },
+	{ "firefox", NULL, NULL, "" },
+	{ NULL, "xfce4-notifyd", NULL, NULL }, // Hide notifications
 };
 
 static const Rule rules[] = {
@@ -57,10 +59,10 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   isfakefullscreen monitor */
-	{ NULL,  "discord",       NULL,       1 << 8,       0,           1,               -1 },
+	{ NULL,  "discord",       NULL,       1 << 3,       0,           1,               -1 },
 	{ NULL,  "microsoft teams - preview",       NULL,       1 << 7,       0,           1,               -1 },
-	{ NULL,  "slack",       NULL,       1 << 7,       0,           1,               -1 },
-	{ NULL,  "spotify",       NULL,       1 << 6,       0,           1,               -1 },
+	{ NULL,  "spotify",       NULL,       1 << 2,       0,           1,               -1 },
+	{ NULL,  "code",       NULL,       1 << 1,       0,           1,               -1 },
 };
 
 /* layout(s) */
