@@ -46,7 +46,7 @@ static const AlternateTagName alternate_tag_names[] = {
 	{ NULL, "spotify", NULL, "" },
 	{ NULL, "google-chrome", NULL, "" },
 	{ NULL, "code", NULL, "" },
-	{ NULL, "kitty", NULL, "" },
+	{ NULL, "wezterm", NULL, "" },
 	{ NULL, "microsoft teams - preview", NULL, "" },
 	{ NULL, "slack", NULL, "" },
 	{ "firefox", NULL, NULL, "" },
@@ -93,7 +93,9 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
 static const char *dmenulayoutcmd[] = { "echo", "\"[]= Tiled~0\n><> Floating~1\n[M] Monocle~2\"", "|", "dmenu", "-d", "'~'", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", QUOTED(dmenufont), NULL };
-static const char *termcmd[]  = { "kitty", NULL };
+static const char *clipmenucmd[] = { "clipmenu", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
+static const char *webcmd[] = { "dmenu_web", "-bw", "1", "-i", "-c", "-l", "30", "-m", dmenumon, "-fn", dmenufont, NULL };
+static const char *termcmd[]  = { "wezterm", NULL };
 static const char *layoutmenu_cmd = "cat <<EOF | xmenu\n[]= Tiled Layout	0\n><> Floating Layout	1\n[M] Monocle Layout	2\nEOF";
 static const char *volup[] = {"pavolume", "volup", NULL};
 static const char *voldown[] = {"pavolume", "voldown", NULL};
@@ -108,7 +110,7 @@ static const char *screenshotcmd[] = { "scrot", "-s", "-e", "xclip -selection cl
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,             					XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,             			XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -116,11 +118,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY | ShiftMask,           XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,             					XK_q,      killclient,     {0} },
+	{ MODKEY,             			XK_q,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+	{ MODKEY,                       XK_w,      spawn,          {.v = webcmd } },
+	{ MODKEY,                       XK_c,      spawn,          {.v = clipmenucmd } },
 	{ MODKEY,                       XK_o,      layoutdmenu,    {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_agrave, view,           {.ui = ~0 } },
@@ -129,15 +133,15 @@ static Key keys[] = {
 	{ MODKEY,                       XK_semicolon, focusmon,    {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_semicolon, tagmon,      {.i = +1 } },
-	{0, 														XF86XK_AudioRaiseVolume, spawn, {.v = volup}},
-	{0, 														XF86XK_AudioLowerVolume, spawn, {.v = voldown}},
-	{0, 														XF86XK_AudioMute, spawn, 				{.v = volmutetoggle}},
-	{0, 														XF86XK_MonBrightnessUp, spawn, 	{.v = lightup}},
-	{0, 														XF86XK_MonBrightnessDown, spawn,{.v = lightdown}},
-	{0, 														XF86XK_AudioPlay, spawn, 				{.v = playpausecmd}},
-	{0, 														XF86XK_AudioNext, spawn, 				{.v = nextcmd}},
-	{0, 														XF86XK_AudioPrev, spawn, 				{.v = prevcmd}},
-	{0, 														XK_Print, spawn, {.v = screenshotcmd}},
+	{0, 							XF86XK_AudioRaiseVolume, spawn, {.v = volup}},
+	{0, 							XF86XK_AudioLowerVolume, spawn, {.v = voldown}},
+	{0, 							XF86XK_AudioMute, spawn, 				{.v = volmutetoggle}},
+	{0, 							XF86XK_MonBrightnessUp, spawn, 	{.v = lightup}},
+	{0, 							XF86XK_MonBrightnessDown, spawn,{.v = lightdown}},
+	{0, 							XF86XK_AudioPlay, spawn, 				{.v = playpausecmd}},
+	{0, 							XF86XK_AudioNext, spawn, 				{.v = nextcmd}},
+	{0, 							XF86XK_AudioPrev, spawn, 				{.v = prevcmd}},
+	{0, 							XK_Print, spawn, {.v = screenshotcmd}},
 	TAGKEYS(                        XK_1,		               0)
 	TAGKEYS(                        XK_2,		               1)
 	TAGKEYS(                        XK_3,		               2)
@@ -171,4 +175,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
